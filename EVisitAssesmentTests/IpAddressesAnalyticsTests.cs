@@ -20,14 +20,7 @@ namespace EVisitAssesment.Tests
         {
             //it has to be mock for logger
             EVisitLogger logger = new EVisitLogger();
-            ipAddressesAnalytics = new IpAddressesAnalytics(logger);
-        }
-
-        [TestCleanup]
-        public void testClean()
-        {
-            ipAddressesAnalytics.Dispose();
-            ipAddressesAnalytics = null;
+            ipAddressesAnalytics = new IpAddressesAnalytics(logger, 100);
         }
 
         void GenerateRandomRequests(int count, int dispersion)
@@ -43,12 +36,7 @@ namespace EVisitAssesment.Tests
         [TestMethod()]
         public void request_handledTest()
         {
-            EVisitLogger logger = new EVisitLogger();
-            ipAddressesAnalytics = new IpAddressesAnalytics(logger, 1000);
-
             GenerateRandomRequests(1000, 200);
-
-            Thread.Sleep(1000 * 2);
 
             var res = ipAddressesAnalytics.top100();
             Assert.AreEqual(100, res.Count);
@@ -64,23 +52,16 @@ namespace EVisitAssesment.Tests
         }
 
         [TestMethod()]
-        public void RecalculateTopIpsTest()
-        {
-            GenerateRandomRequests(1000, 200);
-            var res = ipAddressesAnalytics.RecalculateTopIps();
-            Assert.AreEqual(100, res.Count);
-        }
-
-        [TestMethod()]
         public void RecalculateTopIpsLoadTest()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             //create 20.000.000 records
             GenerateRandomRequests(20 * 1000 * 1000, 20 * 1000 * 1000);
 
             //execution time measurement
-            var sw = new Stopwatch();
-            sw.Start();
-            var res = ipAddressesAnalytics.RecalculateTopIps();
+            var res = ipAddressesAnalytics.top100();
             sw.Stop();
 
             Console.WriteLine("Elapsed (mls)={0}", sw.Elapsed.Milliseconds);

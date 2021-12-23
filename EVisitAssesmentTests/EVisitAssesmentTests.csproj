@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="IpAddressesAnalyticsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TopIPsHeapTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
